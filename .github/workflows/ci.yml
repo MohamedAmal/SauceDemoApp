@@ -1,4 +1,4 @@
-name: Selenium TestNG CI
+name: Selenium TestNG CI (Sequential Browsers)
 
 on:
   push:
@@ -24,32 +24,78 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 3. Install Chrome
-      - name: Set up Google Chrome
-        uses: browser-actions/setup-chrome@v1
+      # 3. Install Chrome, Firefox, and Edge
+      - name: Install browsers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable firefox microsoft-edge-stable
 
-      # 4. Verify Chrome
-      - name: Chrome version
-        run: chrome --version
+      # 4. Verify browser versions
+      - name: Verify browser versions
+        run: |
+          google-chrome --version
+          firefox --version
+          microsoft-edge --version
 
-      # 5. Run TestNG tests (headless in CI)
-      - name: Run TestNG tests
-        run: mvn clean test -DsuiteXmlFile=testng-firefox.xml
+      # 5. Run tests on Chrome
+      - name: Run tests on Chrome
+        run: mvn clean test -DsuiteXmlFile=testng-chrome.xml -Dbrowser=chrome -Dheadless=true
 
-      # 6. Upload Allure results
-      - name: Upload Allure results
+      # 6. Upload Chrome results
+      - name: Upload Allure results (Chrome)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-results-chrome
           path: target/allure-results
           if-no-files-found: warn
 
-      # 7. Upload Surefire reports
-      - name: Upload Surefire reports
+      - name: Upload Surefire reports (Chrome)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
+          name: surefire-reports-chrome
+          path: target/surefire-reports
+          if-no-files-found: warn
+
+      # 7. Run tests on Firefox
+      - name: Run tests on Firefox
+        run: mvn clean test -DsuiteXmlFile=testng-firefox.xml -Dbrowser=firefox -Dheadless=true
+
+      # 8. Upload Firefox results
+      - name: Upload Allure results (Firefox)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-firefox
+          path: target/allure-results
+          if-no-files-found: warn
+
+      - name: Upload Surefire reports (Firefox)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-firefox
+          path: target/surefire-reports
+          if-no-files-found: warn
+
+      # 9. Run tests on Edge
+      - name: Run tests on Edge
+        run: mvn clean test -Dbrowser=edge -Dheadless=true
+
+      # 10. Upload Edge results
+      - name: Upload Allure results (Edge)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-edge
+          path: target/allure-results
+          if-no-files-found: warn
+
+      - name: Upload Surefire reports (Edge)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-edge
           path: target/surefire-reports
           if-no-files-found: warn
