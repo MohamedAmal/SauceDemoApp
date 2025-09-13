@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Java 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -22,17 +24,19 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+      # 3. Install Chrome
+      - name: Set up Google Chrome
+        uses: browser-actions/setup-chrome@v1
 
-      - name: Verify Chrome version
-        run: google-chrome --version
+      # 4. Verify Chrome
+      - name: Chrome version
+        run: chrome --version
 
+      # 5. Run TestNG tests (headless in CI)
       - name: Run TestNG tests
-        run: mvn clean test -DsuiteXmlFile=testng-chrome.xml -Dbrowser=chrome -Dheadless=true
+        run: mvn clean test -Dbrowser=chrome -Dheadless=true
 
+      # 6. Upload Allure results
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -41,6 +45,7 @@ jobs:
           path: target/allure-results
           if-no-files-found: warn
 
+      # 7. Upload Surefire reports
       - name: Upload Surefire reports
         if: always()
         uses: actions/upload-artifact@v4
