@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up JDK 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -22,28 +24,46 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Install Chrome and Firefox
+      # 3. Install Chrome
+      - name: Install Google Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable firefox
+          sudo apt-get install -y google-chrome-stable
 
+      # 4. Install Firefox via APT (not Snap)
+      - name: Install Firefox (APT)
+        run: |
+          sudo snap remove firefox || true
+          sudo add-apt-repository ppa:mozillateam/ppa -y
+          echo '
+          Package: *
+          Pin: release o=LP-PPA-mozillateam
+          Pin-Priority: 1001
+          ' | sudo tee /etc/apt/preferences.d/mozilla-firefox
+          sudo apt-get update
+          sudo apt-get install -y firefox
+
+      # 5. Install Microsoft Edge
       - name: Install Microsoft Edge
         run: |
           curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
           sudo install -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/
-          sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list'
-          sudo apt update
-          sudo apt install -y microsoft-edge-stable
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" | sudo tee /etc/apt/sources.list.d/microsoft-edge.list
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
 
+      # 6. Verify browser versions
       - name: Verify browser versions
         run: |
           google-chrome --version
           firefox --version
           microsoft-edge --version
 
-      - name: Run TestNG suite (Cross-Browser)
-        run: mvn clean test -Dsurefire.suiteXmlFiles=testng-cross-browser.xml -Dheadless=true
+      # 7. Run TestNG suite (Cross-Browser)
+      - name: Run TestNG suite
+        run: mvn clean test -DsuiteXmlFile=testng-cross-browser.xml
 
+      # 8. Upload Allure results
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
@@ -52,6 +72,7 @@ jobs:
           path: target/allure-results
           if-no-files-found: warn
 
+      # 9. Upload Surefire reports
       - name: Upload Surefire reports
         if: always()
         uses: actions/upload-artifact@v4
