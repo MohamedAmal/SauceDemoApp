@@ -31,7 +31,7 @@ jobs:
         run: google-chrome --version
 
       - name: Run TestNG tests
-        run: mvn clean test -Dbrowser=chrome -Dheadless=true
+        run: mvn clean test -DsuiteXmlFile=testng-headless.xml -Dbrowser=chrome -Dheadless=true
 
       - name: Upload Allure results
         if: always()
