@@ -1,4 +1,4 @@
-<suite name="SauceDemo Chrome Suite" parallel="methods" thread-count="20" verbose="1">
+<suite name="SauceDemo Chrome Suite" parallel="methods" thread-count="10" verbose="1">
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
