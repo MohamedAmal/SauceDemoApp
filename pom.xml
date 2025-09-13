@@ -14,9 +14,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <browser>chrome</browser>
         <headless>false</headless>
-        <suiteXmlFile>testng.xml</suiteXmlFile> <!-- ✅ default -->
-
+        <suiteXmlFile>testng-chrome.xml</suiteXmlFile>
     </properties>
+
 <dependencies>
     <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
     <dependency>
@@ -51,20 +51,14 @@
 </dependencies>
     <build>
         <plugins>
-            <!-- Run TestNG via testng.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <!-- Let suiteXmlFile be overridden by command line -->
                     <suiteXmlFiles>
                         <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
-                    <systemPropertyVariables>
-                        <browser>${browser}</browser>
-                        <headless>${headless}</headless>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
