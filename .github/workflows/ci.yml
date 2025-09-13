@@ -39,7 +39,7 @@ jobs:
 
       # 5. Run tests on Chrome
       - name: Run tests on Chrome
-        run: mvn clean test -DsuiteXmlFile=testng-chrome.xml -Dbrowser=chrome -Dheadless=true
+        run: mvn clean test -Dbrowser=chrome -Dheadless=true
 
       # 6. Upload Chrome results
       - name: Upload Allure results (Chrome)
@@ -60,7 +60,7 @@ jobs:
 
       # 7. Run tests on Firefox
       - name: Run tests on Firefox
-        run: mvn clean test -DsuiteXmlFile=testng-firefox.xml -Dbrowser=firefox -Dheadless=true
+        run: mvn clean test -Dbrowser=firefox -Dheadless=true
 
       # 8. Upload Firefox results
       - name: Upload Allure results (Firefox)
