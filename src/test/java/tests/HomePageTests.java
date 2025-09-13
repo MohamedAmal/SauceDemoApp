@@ -4,12 +4,14 @@ import base.BaseTest;
 import constants.TestConstants;
 import io.qameta.allure.*;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.HomePage;
 import pages.ProductsPage;
 
 @Epic("Authentication")
 @Feature("Login Functionality")
+@Listeners({io.qameta.allure.testng.AllureTestNg.class})
 public class HomePageTests extends BaseTest {
 
     @Test(description = "Verify successful login with valid credentials")

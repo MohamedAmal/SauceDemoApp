@@ -5,6 +5,7 @@ import constants.TestConstants;
 import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.CartPage;
 import pages.HomePage;
@@ -12,6 +13,7 @@ import pages.ProductsPage;
 
 @Epic("E-commerce")
 @Feature("Product Management")
+@Listeners({io.qameta.allure.testng.AllureTestNg.class})
 public class ProductsPageTests extends BaseTest {
 
     private ProductsPage productsPage;
