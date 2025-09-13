@@ -34,7 +34,7 @@ jobs:
           microsoft-edge --version
 
       - name: Run TestNG suite (Cross-Browser)
-        run: mvn clean test -DsuiteXmlFile=testng-cross-broswer.xml
+        run: mvn clean test -DsuiteXmlFile=testng-cross-browser.xml
 
       - name: Upload Allure results
         if: always()
