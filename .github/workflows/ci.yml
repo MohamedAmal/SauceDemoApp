@@ -22,10 +22,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Install Chrome, Firefox, and Edge
+      - name: Install browsers
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable firefox microsoft-edge-stable
+          sudo apt-get install -y wget unzip curl
+          
+          # Install Chrome
+          wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install -y ./google-chrome.deb
+
+          # Install Firefox
+          sudo apt install -y firefox
+
+          # Install Edge
+          wget https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/edge-linux-stable.deb -O microsoft-edge.deb
+          sudo apt install -y ./microsoft-edge.deb
 
       - name: Verify browser versions
         run: |
