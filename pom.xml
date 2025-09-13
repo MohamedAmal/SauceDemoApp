@@ -12,9 +12,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <browser>chrome</browser>
-        <headless>false</headless>
-        <suiteXmlFile>testng-chrome.xml</suiteXmlFile>
+<!--        <browser>chrome</browser>-->
+<!--        <headless>false</headless>-->
+<!--        <suiteXmlFile>testng-chrome.xml</suiteXmlFile>-->
     </properties>
 
     <dependencies>
@@ -57,13 +57,16 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <systemPropertyVariables>
-                        <browser>${browser}</browser>
-                        <headless>${headless}</headless>
-                    </systemPropertyVariables>
+<!--                    <suiteXmlFiles>-->
+<!--                        <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>-->
+<!--                    </suiteXmlFiles>-->
+<!--                    <suiteXmlFiles>-->
+<!--                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>-->
+<!--                    </suiteXmlFiles>-->
+<!--                    <systemPropertyVariables>-->
+<!--                        <browser>${browser}</browser>-->
+<!--                        <headless>${headless}</headless>-->
+<!--                    </systemPropertyVariables>-->
                 </configuration>
             </plugin>
         </plugins>
