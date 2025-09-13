@@ -34,7 +34,7 @@ jobs:
 
       # 5. Run TestNG tests (headless in CI)
       - name: Run TestNG tests
-        run: mvn clean test -DsuiteXmlFile=testng-chrome.xml -Dbrowser=chrome -Dheadless=true
+        run: mvn clean test -DsuiteXmlFile=testng-firefox.xml -Dbrowser=chrome -Dheadless=true
 
       # 6. Upload Allure results
       - name: Upload Allure results
