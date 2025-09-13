@@ -38,10 +38,21 @@ jobs:
       - name: Run TestNG tests
         run: mvn clean test -Dbrowser=chrome -Dheadless=true
 
-      # 6. Upload Allure results (updated to v4)
+      # 6) Upload Allure results (fixed to v4)
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: target/allure-results
+          if-no-files-found: warn
+
+      # 7) Upload surefire reports (fixed to v4)
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          if-no-files-found: warn
+
