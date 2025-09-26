@@ -9,12 +9,14 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
 public class DriverManager {
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private static final ThreadLocal<String> userDataDir = new ThreadLocal<>();
 
     public static void setDriver(String browserName) {
         setDriver(browserName, false);
@@ -51,19 +53,28 @@ public class DriverManager {
     }
 
     private static void addCommonChromeArguments(ChromeOptions options, boolean headless) {
-        String userDataDir = createTempUserDataDir();
-        options.addArguments("--user-data-dir=" + userDataDir);
+        // Create unique user data directory for this thread
+        String userDataDirPath = createUniqueUserDataDir();
+        options.addArguments("--user-data-dir=" + userDataDirPath);
 
+        // Essential arguments for CI environment
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-extensions");
         options.addArguments("--remote-allow-origins=*");
         options.addArguments("--disable-blink-features=AutomationControlled");
+
+        // Additional stability arguments for CI
+        options.addArguments("--disable-gpu");
+        options.addArguments("--disable-web-security");
+        options.addArguments("--ignore-certificate-errors");
+        options.addArguments("--disable-features=VizDisplayCompositor");
+
+        // Use incognito mode
         options.addArguments("--incognito");
 
         if (headless) {
             options.addArguments("--headless=new");
-            options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
         }
     }
@@ -72,10 +83,19 @@ public class DriverManager {
         WebDriverManager.firefoxdriver().setup();
         FirefoxOptions options = new FirefoxOptions();
 
+        // Create unique profile directory
+        String profileDirPath = createUniqueUserDataDir();
+        options.addArguments("--profile", profileDirPath);
+
+        // Disable caching
         options.addPreference("browser.cache.disk.enable", false);
         options.addPreference("browser.cache.memory.enable", false);
         options.addPreference("browser.cache.offline.enable", false);
         options.addPreference("network.http.use-cache", false);
+
+        // Additional preferences for stability
+        options.addPreference("media.navigator.enabled", false);
+        options.addPreference("media.peerconnection.enabled", false);
 
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
@@ -93,28 +113,45 @@ public class DriverManager {
         WebDriverManager.edgedriver().setup();
         EdgeOptions options = new EdgeOptions();
 
-        String userDataDir = createTempUserDataDir();
-        options.addArguments("--user-data-dir=" + userDataDir);
+        // Create unique user data directory for this thread
+        String userDataDirPath = createUniqueUserDataDir();
+        options.addArguments("--user-data-dir=" + userDataDirPath);
 
+        // Essential arguments for CI environment
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
         options.addArguments("--remote-allow-origins=*");
         options.addArguments("--disable-blink-features=AutomationControlled");
 
+        // Additional stability arguments for CI
+        options.addArguments("--disable-gpu");
+        options.addArguments("--disable-web-security");
+        options.addArguments("--ignore-certificate-errors");
+        options.addArguments("--disable-features=VizDisplayCompositor");
+
         if (headless) {
             options.addArguments("--headless=new");
-            options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
         }
 
         return new EdgeDriver(options);
     }
 
-    private static String createTempUserDataDir() {
+    private static String createUniqueUserDataDir() {
         try {
-            Path tempDir = Files.createTempDirectory("selenium-profile-" + UUID.randomUUID());
-            tempDir.toFile().deleteOnExit();
-            return tempDir.toAbsolutePath().toString();
+            // Create a more unique directory name using thread ID and timestamp
+            String threadId = String.valueOf(Thread.currentThread().getId());
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+
+            String dirName = String.format("selenium-profile-%s-%s-%s", threadId, timestamp, uniqueId);
+            Path tempDir = Files.createTempDirectory(dirName);
+
+            // Store the path for cleanup
+            String dirPath = tempDir.toAbsolutePath().toString();
+            userDataDir.set(dirPath);
+
+            return dirPath;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create temp user data dir", e);
         }
@@ -130,8 +167,42 @@ public class DriverManager {
             try {
                 webDriver.quit();
             } catch (Exception ignored) {
+                // Ignore quit exceptions
             }
             driver.remove();
+
+            // Clean up user data directory
+            cleanupUserDataDir();
         }
+    }
+
+    private static void cleanupUserDataDir() {
+        String dirPath = userDataDir.get();
+        if (dirPath != null) {
+            try {
+                File dir = new File(dirPath);
+                if (dir.exists()) {
+                    deleteDirectory(dir);
+                }
+            } catch (Exception ignored) {
+                // Ignore cleanup exceptions
+            } finally {
+                userDataDir.remove();
+            }
+        }
+    }
+
+    private static void deleteDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        directory.delete();
     }
 }
