@@ -9,11 +9,12 @@ import org.testng.ITestResult;
 import org.testng.annotations.*;
 
 public class BaseTest {
-
+//    @Optional("chrome") String browser,
+//    @Optional("false") String headless,
     @BeforeMethod
     @Parameters({"browser", "headless"})
-    public void setUp(@Optional("chrome") String browser,
-                      @Optional("false") String headless,
+    public void setUp( String browser,
+                       String headless,
                       ITestResult result) {
         boolean isHeadless = Boolean.parseBoolean(headless);
 

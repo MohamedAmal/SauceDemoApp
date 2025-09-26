@@ -14,7 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <!--        <browser>chrome</browser>-->
 <!--        <headless>false</headless>-->
-<!--        <suiteXmlFile>testng-chrome.xml</suiteXmlFile>-->
+        <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>
+        <suiteXmlFile>testng-edge.xml</suiteXmlFile>
     </properties>
 
     <dependencies>
@@ -48,6 +49,11 @@
             <version>2.29.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>6.3.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,9 +66,9 @@
 <!--                    <suiteXmlFiles>-->
 <!--                        <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>-->
 <!--                    </suiteXmlFiles>-->
-<!--                    <suiteXmlFiles>-->
-<!--                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>-->
-<!--                    </suiteXmlFiles>-->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                    </suiteXmlFiles>
 <!--                    <systemPropertyVariables>-->
 <!--                        <browser>${browser}</browser>-->
 <!--                        <headless>${headless}</headless>-->

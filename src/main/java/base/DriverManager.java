@@ -1,5 +1,6 @@
 package base;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -7,8 +8,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.safari.SafariOptions;
+
 
 public class DriverManager {
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
@@ -31,14 +31,13 @@ public class DriverManager {
                 return createFirefoxDriver(headless);
             case "edge":
                 return createEdgeDriver(headless);
-            case "safari":
-                return createSafariDriver();
             default:
                 throw new IllegalArgumentException("Browser not supported: " + browserName);
         }
     }
 
     private static WebDriver createChromeDriver(boolean headless) {
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         addCommonChromeArguments(options);
 
@@ -63,6 +62,7 @@ public class DriverManager {
     }
 
     private static WebDriver createFirefoxDriver(boolean headless) {
+        WebDriverManager.firefoxdriver().setup();
         FirefoxOptions options = new FirefoxOptions();
         addCommonFirefoxPreferences(options);
 
@@ -89,6 +89,7 @@ public class DriverManager {
     }
 
     private static WebDriver createEdgeDriver(boolean headless) {
+        WebDriverManager.edgedriver().setup();
         EdgeOptions options = new EdgeOptions();
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
@@ -104,12 +105,7 @@ public class DriverManager {
         return new EdgeDriver(options);
     }
 
-    private static WebDriver createSafariDriver() {
-        SafariOptions options = new SafariOptions();
-        options.setAutomaticInspection(false);
-        options.setAutomaticProfiling(false);
-        return new SafariDriver(options);
-    }
+
 
     public static WebDriver getDriver() {
         return driver.get();
