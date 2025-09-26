@@ -2,7 +2,7 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="SauceDemo Parallel Suite" parallel="methods" thread-count="10" verbose="1">
     <parameter name="browser" value="chrome"/>
-
+    <parameter name="headless" value="true"/>
     <test name="SauceDemo Tests - Run 1">
         <classes>
             <class name="tests.HomePageTests"/>
