@@ -81,7 +81,7 @@ jobs:
       - name: Run TestNG suite
         run: |
           export DISPLAY=:99
-          timeout 30m mvn clean test -DsuiteXmlFile=testng-cross-browser.xml -Dmaven.test.failure.ignore=true
+          timeout 30m mvn clean test -DsuiteXmlFile=testng.xml -Dmaven.test.failure.ignore=true
         continue-on-error: true
 
       # 10. Cleanup selenium temp files
