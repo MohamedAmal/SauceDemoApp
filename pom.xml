@@ -14,8 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <!--        <browser>chrome</browser>-->
 <!--        <headless>false</headless>-->
-        <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>
-        <suiteXmlFile>testng-edge.xml</suiteXmlFile>
+<!--        <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>-->
+        <suiteXmlFile>testng.xml</suiteXmlFile>
     </properties>
 
     <dependencies>
@@ -50,11 +50,31 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-java-commons</artifactId>
+            <version>2.29.1</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>6.3.2</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>cross-browser</id>
+            <properties>
+                <suiteXmlFile>testng-cross-browser.xml</suiteXmlFile>
+            </properties>
+        </profile>
+        <profile>
+            <id>edge</id>
+            <properties>
+                <suiteXmlFile>testng-edge.xml</suiteXmlFile>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -69,10 +89,34 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
-<!--                    <systemPropertyVariables>-->
+                    <systemProperties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </systemProperties>
+                    <systemPropertyVariables>
+                        <!--suppress UnresolvedMavenProperty -->
 <!--                        <browser>${browser}</browser>-->
+                        <!--suppress UnresolvedMavenProperty -->
 <!--                        <headless>${headless}</headless>-->
-<!--                    </systemPropertyVariables>-->
+                    </systemPropertyVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>1.9.24</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.12.0</version>
+                <configuration>
+                    <reportVersion>2.24.0</reportVersion>
                 </configuration>
             </plugin>
         </plugins>

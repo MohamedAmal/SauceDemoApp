@@ -81,7 +81,7 @@ jobs:
       - name: Run TestNG suite
         run: |
           export DISPLAY=:99
-          timeout 30m mvn clean test -DsuiteXmlFile=testng.xml -Dmaven.test.failure.ignore=true
+          timeout 30m mvn clean test -DsuiteXmlFile=testng-cross-browser.xml -Dmaven.test.failure.ignore=true
         continue-on-error: true
 
       # 10. Cleanup selenium temp files
@@ -91,8 +91,27 @@ jobs:
           sudo rm -rf /tmp/selenium-* || true
           sudo rm -rf /tmp/selenium-tests || true
 
-      # 11. Upload Allure results
-      - name: Upload Allure results
+      # 11. Generate Allure Report
+      - name: Generate Allure Report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: target/allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+
+      # 12. Deploy to GitHub Pages
+      - name: Deploy Allure Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+          destination_dir: allure-report
+
+      # 13. Upload artifacts as backup
+      - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -100,23 +119,15 @@ jobs:
           path: target/allure-results
           if-no-files-found: warn
 
-      # 12. Upload Surefire reports
-      - name: Upload Surefire reports
-        if: always()
-        uses: actions/upload-artifact@v4
+      # 14. Comment PR with report link
+      - name: Comment PR with Allure Report
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
         with:
-          name: surefire-reports
-          path: target/surefire-reports
-          if-no-files-found: warn
-
-      # 13. Generate test summary
-      - name: Generate Test Summary
-        if: always()
-        run: |
-          if [ -f target/surefire-reports/testng-results.xml ]; then
-            echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-            echo "### TestNG Results" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`xml" >> $GITHUB_STEP_SUMMARY
-            grep -E "(testng-results|suite|test)" target/surefire-reports/testng-results.xml | head -20 >> $GITHUB_STEP_SUMMARY || true
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          fi
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📊 **Allure Report**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure-report/'
+            })
