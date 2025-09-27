@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"2a9bed3d03638e9ab43ee152bdc0fe7a","name":"SauceDemo Cross-Browser Suite","statistic":{"failed":0,"broken":0,"skipped":0,"passed":30,"unknown":0,"total":30}}]}
+{"total":1,"items":[{"uid":"9277c0773f45b4a9da74a6792c88e10f","name":"SauceDemo Parallel Suite","statistic":{"failed":0,"broken":0,"skipped":0,"passed":10,"unknown":0,"total":10}}]}
